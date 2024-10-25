@@ -118,9 +118,7 @@ public final class TimeSeriesProfileInstanceController extends TimeSeriesProfile
                     + " time series profile instance.", required = true),
         },
         method = HttpMethod.GET,
-        summary = "Get all time series profile instances that match the provided masks. This endpoint will return a "
-                + "list of time series profile instances without the associated data. Data for an instance can be "
-                + "retrieved using the singular retrieval endpoint.",
+        summary = "Get a time series profile instance that matches the provided parameters.",
         tags = {TAG},
         responses = {
             @OpenApiResponse(status = STATUS_200,

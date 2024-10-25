@@ -85,7 +85,7 @@ public final class TimeSeriesProfileParserController extends TimeSeriesProfilePa
 
         },
         method = HttpMethod.GET,
-        summary = "Get a TimeSeriesProfileParser by ID",
+        summary = "Get a TimeSeriesProfile Parser by ID",
         tags = {TAG}
     )
 

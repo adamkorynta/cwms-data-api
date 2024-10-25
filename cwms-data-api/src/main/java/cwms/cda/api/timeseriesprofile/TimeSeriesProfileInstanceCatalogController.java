@@ -71,7 +71,9 @@ public final class TimeSeriesProfileInstanceCatalogController extends TimeSeries
                 + " time series profile instance. Default is *"),
         },
         method = HttpMethod.GET,
-        summary = "Get all time series profile instances. Masks can be provided to filter the results.",
+        summary = "Get all time series profile instances that match the provided masks. This endpoint will return a "
+                + "list of time series profile instances without the associated data. Data for an instance can be "
+                + "retrieved using the singular retrieval endpoint.",
         tags = {TAG},
         responses = {
             @OpenApiResponse(status = STATUS_200,

@@ -26,7 +26,15 @@
 
 package cwms.cda.api.timeseriesprofile;
 
-import static cwms.cda.api.Controllers.*;
+import static cwms.cda.api.Controllers.DELETE;
+import static cwms.cda.api.Controllers.LOCATION_ID;
+import static cwms.cda.api.Controllers.OFFICE;
+import static cwms.cda.api.Controllers.PARAMETER_ID;
+import static cwms.cda.api.Controllers.STATUS_204;
+import static cwms.cda.api.Controllers.STATUS_400;
+import static cwms.cda.api.Controllers.STATUS_404;
+import static cwms.cda.api.Controllers.STATUS_501;
+import static cwms.cda.api.Controllers.requiredParam;
 import static cwms.cda.data.dao.JooqDao.getDslContext;
 
 import com.codahale.metrics.MetricRegistry;
@@ -55,18 +63,18 @@ public final class TimeSeriesProfileDeleteController extends TimeSeriesProfileBa
             },
             pathParams = {
                 @OpenApiParam(name = LOCATION_ID, description = "The location ID associated with the time "
-                        + "series profile"),
+                    + "series profile"),
                 @OpenApiParam(name = PARAMETER_ID, description = "The key parameter associated with the "
-                        + "time series profile")
+                    + "time series profile")
             },
             method = HttpMethod.DELETE,
-            summary = "Update a time series profile",
+            summary = "Delete a time series profile",
             tags = {TAG},
             responses = {
-                    @OpenApiResponse(status = STATUS_400, description = "Invalid input"),
-                    @OpenApiResponse(status = STATUS_204, description = "Time series profile deleted"),
-                    @OpenApiResponse(status = STATUS_404, description = "Time series profile not found"),
-                    @OpenApiResponse(status = STATUS_501, description = "Internal server error")
+                @OpenApiResponse(status = STATUS_400, description = "Invalid input"),
+                @OpenApiResponse(status = STATUS_204, description = "Time series profile deleted"),
+                @OpenApiResponse(status = STATUS_404, description = "Time series profile not found"),
+                @OpenApiResponse(status = STATUS_501, description = "Internal server error")
             }
     )
     @Override

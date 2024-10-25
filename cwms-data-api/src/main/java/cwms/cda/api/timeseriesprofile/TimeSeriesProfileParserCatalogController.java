@@ -82,7 +82,7 @@ public final class TimeSeriesProfileParserCatalogController extends TimeSeriesPr
                 + "implemented")
         },
         method = HttpMethod.GET,
-        summary = "Get a TimeSeriesProfileParser by ID",
+        summary = "Retrieve a list of TimeSeries Profile Parsers that match the provided mask parameters",
         tags = {TAG}
     )
     @Override

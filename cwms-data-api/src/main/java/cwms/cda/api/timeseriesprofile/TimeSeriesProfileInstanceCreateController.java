@@ -75,7 +75,7 @@ public final class TimeSeriesProfileInstanceCreateController extends TimeSeriesP
                 + " time series profile instance.", required = true),
         },
         method = HttpMethod.POST,
-        summary = "Create a new time series profile instance",
+        summary = "Create a new time series profile instance by parsing provided data",
         tags = {TAG},
         requestBody = @OpenApiRequestBody(content = {@OpenApiContent(from = TimeSeriesProfile.class)}),
         responses = {

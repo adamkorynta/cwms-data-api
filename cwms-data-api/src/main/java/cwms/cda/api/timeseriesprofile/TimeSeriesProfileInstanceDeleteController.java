@@ -84,7 +84,7 @@ public final class TimeSeriesProfileInstanceDeleteController extends TimeSeriesP
                 + " time series profile instance.", required = true),
         },
         method = HttpMethod.DELETE,
-        summary = "Get all time series profile instances",
+        summary = "Delete a time series profile instance",
         tags = {TAG},
         responses = {
             @OpenApiResponse(status = "400", description = "Invalid input")

@@ -74,7 +74,7 @@ public final class TimeSeriesProfileCatalogController extends TimeSeriesProfileB
             @OpenApiParam(name = PAGE_SIZE, description = "The page size. Default is 500")
         },
         method = HttpMethod.GET,
-        summary = "Get a time series profile",
+        summary = "Get a catalog of time series profiles",
         tags = {TAG},
         responses = {
             @OpenApiResponse(status = STATUS_200,

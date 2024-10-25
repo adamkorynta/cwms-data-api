@@ -68,7 +68,7 @@ public final class TimeSeriesProfileParserCreateController extends TimeSeriesPro
             required = true
         ),
         method = HttpMethod.POST,
-        summary = "Parse TimeSeriesProfileData into a new Time Series Profile",
+        summary = "Store a TimeSeriesProfile Parser",
         tags = {TAG}
     )
     @Override

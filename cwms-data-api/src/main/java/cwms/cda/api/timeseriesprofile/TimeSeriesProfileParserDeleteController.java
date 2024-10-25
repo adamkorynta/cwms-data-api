@@ -26,7 +26,14 @@
 
 package cwms.cda.api.timeseriesprofile;
 
-import static cwms.cda.api.Controllers.*;
+import static cwms.cda.api.Controllers.DELETE;
+import static cwms.cda.api.Controllers.LOCATION_ID;
+import static cwms.cda.api.Controllers.OFFICE;
+import static cwms.cda.api.Controllers.PARAMETER_ID;
+import static cwms.cda.api.Controllers.STATUS_204;
+import static cwms.cda.api.Controllers.STATUS_404;
+import static cwms.cda.api.Controllers.STATUS_501;
+import static cwms.cda.api.Controllers.requiredParam;
 import static cwms.cda.data.dao.JooqDao.getDslContext;
 
 import com.codahale.metrics.MetricRegistry;
@@ -67,7 +74,7 @@ public final class TimeSeriesProfileParserDeleteController extends TimeSeriesPro
             @OpenApiResponse(status = STATUS_501, description = "Requested format is not implemented")
         },
         method = HttpMethod.DELETE,
-        summary = "Delete a TimeSeriesProfileParser by ID",
+        summary = "Delete a TimeSeriesProfile Parser by ID",
         tags = {TAG}
     )
     @Override

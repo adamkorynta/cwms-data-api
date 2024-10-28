@@ -31,6 +31,7 @@ import cwms.cda.data.dao.timeseriesprofile.TimeSeriesProfileDao;
 import cwms.cda.data.dao.timeseriesprofile.TimeSeriesProfileParserDao;
 import cwms.cda.data.dto.CwmsId;
 import cwms.cda.data.dto.timeseriesprofile.TimeSeriesProfile;
+import cwms.cda.data.dto.timeseriesprofile.TimeSeriesProfileParser;
 import cwms.cda.data.dto.timeseriesprofile.TimeSeriesProfileParserColumnar;
 import cwms.cda.data.dto.timeseriesprofile.TimeSeriesProfileParserIndexed;
 import cwms.cda.formatters.ContentType;
@@ -122,7 +123,7 @@ final class TimeSeriesProfileParserControllerIT extends DataApiTestIT {
     }
 
     @Test
-    void test_create_retrieve_TimeSeriesProfileParser_Indexed() {
+    void test_create_retrieve_TimeSeriesProfileParser_Indexed() throws Exception {
         // Create a Time Series Profile Parser
         given()
             .log().ifValidationFails(LogDetail.ALL, true)
@@ -140,6 +141,8 @@ final class TimeSeriesProfileParserControllerIT extends DataApiTestIT {
         .assertThat()
             .statusCode(is(HttpServletResponse.SC_CREATED))
         ;
+
+        assertParserInDb(tspParserIndexed);
 
         // Retrieve the Time Series Profile Parser
         given()
@@ -168,7 +171,7 @@ final class TimeSeriesProfileParserControllerIT extends DataApiTestIT {
     }
 
     @Test
-    void test_create_retrieve_TimeSeriesProfileParser_Columnar() {
+    void test_create_retrieve_TimeSeriesProfileParser_Columnar() throws Exception {
         // Create a Time Series Profile Parser
         given()
             .log().ifValidationFails(LogDetail.ALL, true)
@@ -186,6 +189,8 @@ final class TimeSeriesProfileParserControllerIT extends DataApiTestIT {
         .assertThat()
             .statusCode(is(HttpServletResponse.SC_CREATED))
         ;
+
+        assertParserInDb(tspParserColumnar);
 
         // Retrieve the Time Series Profile Parser
         given()
@@ -212,7 +217,7 @@ final class TimeSeriesProfileParserControllerIT extends DataApiTestIT {
     }
 
     @Test
-    void test_delete_TimeSeriesProfileParser() {
+    void test_delete_TimeSeriesProfileParser() throws Exception {
         // Create a Time Series Profile Parser
         given()
             .log().ifValidationFails(LogDetail.ALL, true)
@@ -230,6 +235,8 @@ final class TimeSeriesProfileParserControllerIT extends DataApiTestIT {
         .assertThat()
             .statusCode(is(HttpServletResponse.SC_CREATED))
         ;
+
+        assertParserInDb(tspParserIndexed);
 
         // Delete the Time Series Profile Parser
         given()
@@ -321,6 +328,8 @@ final class TimeSeriesProfileParserControllerIT extends DataApiTestIT {
             .statusCode(is(HttpServletResponse.SC_CREATED))
         ;
 
+        assertParserInDb(tspIndex);
+
         given()
             .log().ifValidationFails(LogDetail.ALL, true)
             .accept(Formats.JSONV1)
@@ -410,5 +419,16 @@ final class TimeSeriesProfileParserControllerIT extends DataApiTestIT {
         } catch (NotFoundException e) {
             LOGGER.log(Level.CONFIG, "TS Cleanup failed", e);
         }
+    }
+
+    private void assertParserInDb(TimeSeriesProfileParser parser) throws Exception {
+        CwmsDatabaseContainer<?> db = CwmsDataApiSetupCallback.getDatabaseLink();
+        db.connection(c -> {
+            DSLContext dsl = dslContext(c, OFFICE_ID);
+            TimeSeriesProfileParserDao dao = new TimeSeriesProfileParserDao(dsl);
+            TimeSeriesProfileParser dbParser = dao.retrieveTimeSeriesProfileParser(parser.getLocationId().getName(),
+                    parser.getKeyParameter(), OFFICE_ID);
+            assertNotNull(dbParser);
+        }, CwmsDataApiSetupCallback.getWebUser());
     }
 }

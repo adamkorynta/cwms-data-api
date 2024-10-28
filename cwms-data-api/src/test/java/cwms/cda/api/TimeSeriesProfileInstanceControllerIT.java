@@ -30,7 +30,7 @@ import static cwms.cda.api.Controllers.*;
 import static cwms.cda.security.KeyAccessManager.AUTH_HEADER;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.*;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 import cwms.cda.api.errors.NotFoundException;
 import cwms.cda.data.dao.StoreRule;
@@ -40,12 +40,14 @@ import cwms.cda.data.dao.timeseriesprofile.TimeSeriesProfileParserDao;
 import cwms.cda.data.dto.CwmsId;
 import cwms.cda.data.dto.timeseriesprofile.TimeSeriesProfile;
 import cwms.cda.data.dto.timeseriesprofile.TimeSeriesProfileInstance;
+import cwms.cda.data.dto.timeseriesprofile.TimeSeriesProfileParser;
 import cwms.cda.data.dto.timeseriesprofile.TimeSeriesProfileParserColumnar;
 import cwms.cda.data.dto.timeseriesprofile.TimeSeriesProfileParserIndexed;
 import cwms.cda.formatters.Formats;
 import fixtures.CwmsDataApiSetupCallback;
 import fixtures.TestAccounts;
 import io.restassured.filter.log.LogDetail;
+
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
@@ -60,6 +62,7 @@ import mil.army.usace.hec.test.database.CwmsDatabaseContainer;
 import org.apache.commons.io.IOUtils;
 import org.jooq.DSLContext;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -105,6 +108,14 @@ final class TimeSeriesProfileInstanceControllerIT extends DataApiTestIT {
     private String tspData;
     private String tspData2;
     private final String units = "m,F";
+    private static final String LOCATION_1_NAME = "Beaverdam Ck Dam";
+    private static final String LOCATION_2_NAME = "Sacramento Dam";
+
+    @BeforeAll
+    public static void beforeAll() throws Exception {
+        createLocation(LOCATION_1_NAME, true, OFFICE_ID, "SITE");
+        createLocation(LOCATION_2_NAME, true, OFFICE_ID, "SITE");
+    }
 
     @BeforeEach
     public void setup() throws Exception {
@@ -146,8 +157,6 @@ final class TimeSeriesProfileInstanceControllerIT extends DataApiTestIT {
                 .withFirstDate(tspInstance.getFirstDate())
                 .withLastDate(tspInstance.getLastDate())
                 .build();
-        createLocation(tsProfile.getLocationId().getName(), true, OFFICE_ID, "SITE");
-        createLocation(tsProfile2.getLocationId().getName(), true, OFFICE_ID, "SITE");
         CwmsDatabaseContainer<?> db = CwmsDataApiSetupCallback.getDatabaseLink();
         db.connection(c -> {
             DSLContext dsl = dslContext(c, OFFICE_ID);
@@ -204,6 +213,8 @@ final class TimeSeriesProfileInstanceControllerIT extends DataApiTestIT {
     void test_create_retrieve_TimeSeriesProfileInstance_Columnar() throws Exception {
 
         storeParser(null, tspParserColumnar);
+
+        assertParserInDb(tspParserColumnar);
 
         // Create instance
         given()
@@ -264,6 +275,8 @@ final class TimeSeriesProfileInstanceControllerIT extends DataApiTestIT {
     @Test
     void store_retrieve_instance_with_ref_TS() throws Exception {
         storeParser(tspParserIndexed2, null);
+
+        assertParserInDb(tspParserIndexed2);
 
         // Create instance
         given()
@@ -328,6 +341,8 @@ final class TimeSeriesProfileInstanceControllerIT extends DataApiTestIT {
 
         storeParser(tspParserIndexed, null);
 
+        assertParserInDb(tspParserIndexed);
+
         // Create instance
         given()
             .log().ifValidationFails(LogDetail.ALL, true)
@@ -389,6 +404,8 @@ final class TimeSeriesProfileInstanceControllerIT extends DataApiTestIT {
     void test_create_retrieve_paged_TimeSeriesProfileInstance_Indexed() throws Exception {
 
         storeParser(tspParserIndexed, null);
+
+        assertParserInDb(tspParserIndexed);
 
         // Create instance
         given()
@@ -498,6 +515,8 @@ final class TimeSeriesProfileInstanceControllerIT extends DataApiTestIT {
 
         storeParser(null, tspParserColumnar);
 
+        assertParserInDb(tspParserColumnar);
+
         // Create instance
         given()
             .log().ifValidationFails(LogDetail.ALL, true)
@@ -599,6 +618,8 @@ final class TimeSeriesProfileInstanceControllerIT extends DataApiTestIT {
     @Test
     void test_retrieve_TimeSeriesProfileInstance_Columnar_maxVersion() throws Exception {
         storeParser(null, tspParserColumnar);
+
+        assertParserInDb(tspParserColumnar);
 
         // Create instance
         given()
@@ -788,6 +809,8 @@ final class TimeSeriesProfileInstanceControllerIT extends DataApiTestIT {
     void test_previous_next_TimeSeriesProfileInstance_Indexed() throws Exception {
         storeParser(tspParserIndexed, null);
 
+        assertParserInDb(tspParserIndexed);
+
         // Create instance
         given()
             .log().ifValidationFails(LogDetail.ALL, true)
@@ -926,6 +949,9 @@ final class TimeSeriesProfileInstanceControllerIT extends DataApiTestIT {
     void test_delete_TimeSeriesProfileInstance_Columnar() throws Exception {
 
         storeParser(null, tspParserColumnar);
+
+        assertParserInDb(tspParserColumnar);
+
         // Create instance
         given()
             .log().ifValidationFails(LogDetail.ALL, true)
@@ -1002,6 +1028,8 @@ final class TimeSeriesProfileInstanceControllerIT extends DataApiTestIT {
     void test_delete_TimeSeriesProfileInstance_Indexed() throws Exception {
 
         storeParser(tspParserIndexed, null);
+
+        assertParserInDb(tspParserIndexed);
 
         // Create instance
         given()
@@ -1103,6 +1131,8 @@ final class TimeSeriesProfileInstanceControllerIT extends DataApiTestIT {
     void test_retrieve_all_TimeSeriesProfileInstance_Columnar() throws Exception {
         storeParser(null, tspParserColumnar);
 
+        assertParserInDb(tspParserColumnar);
+
         // Create instance
         given()
             .log().ifValidationFails(LogDetail.ALL, true)
@@ -1175,6 +1205,8 @@ final class TimeSeriesProfileInstanceControllerIT extends DataApiTestIT {
     @Test
     void test_retrieve_all_TimeSeriesProfileInstance_Indexed() throws Exception {
         storeParser(tspParserIndexed, null);
+
+        assertParserInDb(tspParserIndexed);
 
         // Create instance
         given()
@@ -1286,6 +1318,22 @@ final class TimeSeriesProfileInstanceControllerIT extends DataApiTestIT {
             } else {
                 dao.storeTimeSeriesProfileParser(parserC, false);
             }
+            try {
+                c.commit();
+            } catch (SQLException e) {
+                LOGGER.log(Level.CONFIG, "Failed to commit transaction", e);
+            }
         });
+    }
+
+    private void assertParserInDb(TimeSeriesProfileParser parser) throws Exception {
+        CwmsDatabaseContainer<?> db = CwmsDataApiSetupCallback.getDatabaseLink();
+        db.connection(c -> {
+            DSLContext dsl = dslContext(c, OFFICE_ID);
+            TimeSeriesProfileParserDao dao = new TimeSeriesProfileParserDao(dsl);
+            TimeSeriesProfileParser dbParser = dao.retrieveTimeSeriesProfileParser(parser.getLocationId().getName(),
+                    parser.getKeyParameter(), OFFICE_ID);
+            assertNotNull(dbParser);
+        }, CwmsDataApiSetupCallback.getWebUser());
     }
 }

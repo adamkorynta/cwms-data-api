@@ -102,7 +102,6 @@ final class TimeSeriesProfileControllerIT extends DataApiTestIT {
 
     @Test
     void test_create_retrieve_TimeSeriesProfile() {
-
         // Create a new TimeSeriesProfile
         given()
             .log().ifValidationFails(LogDetail.ALL, true)
@@ -167,7 +166,6 @@ final class TimeSeriesProfileControllerIT extends DataApiTestIT {
         .assertThat()
             .statusCode(is(HttpServletResponse.SC_CREATED))
         ;
-
         // Retrieve the TimeSeriesProfile
         given()
             .log().ifValidationFails(LogDetail.ALL, true)
@@ -212,7 +210,6 @@ final class TimeSeriesProfileControllerIT extends DataApiTestIT {
         .assertThat()
             .statusCode(is(HttpServletResponse.SC_CREATED))
         ;
-
         // Create a new TimeSeriesProfile
         given()
             .log().ifValidationFails(LogDetail.ALL, true)
@@ -349,7 +346,6 @@ final class TimeSeriesProfileControllerIT extends DataApiTestIT {
 
     @Test
     void test_get_all_TimeSeriesProfile() {
-
         // Create a new TimeSeriesProfile
         given()
             .log().ifValidationFails(LogDetail.ALL, true)
@@ -496,5 +492,4 @@ final class TimeSeriesProfileControllerIT extends DataApiTestIT {
             LOGGER.log(Level.CONFIG, "Unable to cleanup TS Profile - not found", e);
         }
     }
-
 }

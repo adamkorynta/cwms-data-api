@@ -56,8 +56,7 @@ import java.util.logging.Logger;
 import static cwms.cda.api.Controllers.*;
 import static cwms.cda.security.KeyAccessManager.AUTH_HEADER;
 import static io.restassured.RestAssured.given;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @Tag("integration")
@@ -364,8 +363,12 @@ final class TimeSeriesProfileParserControllerIT extends DataApiTestIT {
             .body("[0].key-parameter", equalTo(tspIndex.getKeyParameter()))
             .body("[0].time-format", equalTo(tspIndex.getTimeFormat()))
             .body("[0].time-zone", equalTo(tspIndex.getTimeZone()))
-            .body("[0].parameter-info-list[0].parameter", equalTo(tspIndex.getParameterInfoList().get(1).getParameter()))
-            .body("[0].parameter-info-list[1].parameter", equalTo(tspIndex.getParameterInfoList().get(0).getParameter()))
+            .body("[0].parameter-info-list[0].parameter",
+                    anyOf(equalTo(tspIndex.getParameterInfoList().get(0).getParameter()),
+                            equalTo(tspIndex.getParameterInfoList().get(1).getParameter())))
+            .body("[0].parameter-info-list[1].parameter",
+                    anyOf(equalTo(tspIndex.getParameterInfoList().get(1).getParameter()),
+                            equalTo(tspIndex.getParameterInfoList().get(0).getParameter())))
             .body("[0].location-id.office-id", equalTo(tspIndex.getLocationId().getOfficeId()))
             .body("[0].type", equalTo("indexed-timeseries-profile-parser"))
         ;

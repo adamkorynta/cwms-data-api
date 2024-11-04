@@ -44,6 +44,7 @@ import static cwms.cda.api.Controllers.TIMEZONE;
 import static cwms.cda.api.Controllers.UNIT;
 import static cwms.cda.api.Controllers.VERSION;
 import static cwms.cda.api.Controllers.VERSION_DATE;
+import static cwms.cda.api.Controllers.queryParamAsInstant;
 import static cwms.cda.api.Controllers.requiredInstant;
 import static cwms.cda.api.Controllers.requiredParam;
 import static cwms.cda.data.dao.JooqDao.getDslContext;
@@ -85,8 +86,9 @@ public final class TimeSeriesProfileInstanceController extends TimeSeriesProfile
                 + "the time zone of the values of the begin and end fields (unless "
                 + "otherwise specified). If this field is not specified, the default time zone "
                 + "of UTC shall be used."),
-            @OpenApiParam(name = VERSION_DATE, type = Instant.class, description = "The version date of the"
-                + " time series profile instance. Default is the min or max version date, depending on the maxVersion"),
+            @OpenApiParam(name = VERSION_DATE, type = Instant.class, description = "The version date of the "
+                + "time series profile instance. Accepts ISO8601 formats. Default is the min or max version date,"
+                + " depending on the maxVersion"),
             @OpenApiParam(name = UNIT, description = "The units of the"
                 + " time series profile instance. Provided as a list separated by ','", required = true),
             @OpenApiParam(name = START_TIME_INCLUSIVE, type = Boolean.class, description = "The start inclusive of the"
@@ -149,9 +151,7 @@ public final class TimeSeriesProfileInstanceController extends TimeSeriesProfile
                     .getOrDefault(true);
             boolean previous = ctx.queryParamAsClass(PREVIOUS, boolean.class).getOrDefault(false);
             boolean next = ctx.queryParamAsClass(NEXT, boolean.class).getOrDefault(false);
-            Instant versionDate = ctx.queryParamAsClass(VERSION_DATE, String.class).getOrDefault(null) == null
-                    ? null : Instant.parse(ctx.queryParamAsClass(VERSION_DATE, String.class)
-                    .getOrDefault(null));
+            Instant versionDate = queryParamAsInstant(ctx, VERSION_DATE);
             boolean maxVersion = ctx.queryParamAsClass(MAX_VERSION, boolean.class)
                     .getOrDefault(false);
             String page = ctx.queryParam(PAGE);

@@ -82,7 +82,7 @@ public class TimeSeriesProfileInstanceDao extends JooqDao<TimeSeriesProfileInsta
     }
 
     public void storeTimeSeriesProfileInstance(TimeSeriesProfileInstance timeseriesProfileInstance, String versionId,
-            Instant versionInstant, String storeRule, String overrideProtection) {
+            Instant versionDate, String storeRule, String overrideProtection) {
         connection(dsl, conn -> {
             setOffice(conn, timeseriesProfileInstance.getTimeSeriesProfile().getLocationId().getOfficeId());
             Map<String, BigInteger> parameterIdToCode = new HashMap<>();
@@ -143,7 +143,7 @@ public class TimeSeriesProfileInstanceDao extends JooqDao<TimeSeriesProfileInsta
                     .getTimeSeriesProfile().getKeyParameter()));
             tsProfileData.setUNITS(units);
 
-            Timestamp versionTimeStamp = Timestamp.from(versionInstant);
+            Timestamp versionTimeStamp = Timestamp.from(versionDate);
 
             CWMS_TS_PROFILE_PACKAGE.call_STORE_TS_PROFILE_INSTANCE(using(conn).configuration(),
                     tsProfileData,
@@ -342,14 +342,23 @@ public class TimeSeriesProfileInstanceDao extends JooqDao<TimeSeriesProfileInsta
             SelectHavingStep<Record1<Integer>> count = dsl.select(countDistinct(VIEW_TSV2.DATE_TIME))
                     .from(VIEW_TSV2)
                     .where(finalWhereCondition);
-            total = Objects.requireNonNull(count.fetchOne()).value1();
+            try {
+                total = count.fetchOne().value1();
+            } catch (NullPointerException e) {
+                throw new NotFoundException("No time series profile data found for the given parameters");
+            }
         }
 
         // get total number of parameters to for setting fetch size
+        int totalPars;
         SelectHavingStep<Record1<Integer>> count = dsl.select(countDistinct(VIEW_TSV2.PARAMETER_ID))
                 .from(VIEW_TSV2)
                 .where(finalWhereCondition);
-        int totalPars = Objects.requireNonNull(count.fetchOne()).value1();
+        try {
+            totalPars = count.fetchOne().value1();
+        } catch (NullPointerException e) {
+            throw new NotFoundException("No time series profile data found for the given parameters");
+        }
 
         // Get the max version date if needed
         Timestamp maxVersionDate = null;
@@ -357,14 +366,22 @@ public class TimeSeriesProfileInstanceDao extends JooqDao<TimeSeriesProfileInsta
             SelectConditionStep<Record1<Timestamp>> maxVer = dsl.select(max(VIEW_TSV2.VERSION_DATE))
                     .from(VIEW_TSV2)
                     .where(finalWhereCondition);
-            maxVersionDate = Objects.requireNonNull(maxVer.fetchOne()).value1();
+            try {
+                maxVersionDate = maxVer.fetchOne().value1();
+            } catch (NullPointerException e) {
+                throw new NotFoundException("No time series profile data found for the given parameters");
+            }
         }
         Timestamp minVersionDate = null;
         if (!maxVersion && versionDate == null) {
             SelectConditionStep<Record1<Timestamp>> minVer = dsl.select(min(VIEW_TSV2.VERSION_DATE))
                     .from(VIEW_TSV2)
                     .where(finalWhereCondition);
-            minVersionDate = Objects.requireNonNull(minVer.fetchOne()).value1();
+            try {
+                minVersionDate = minVer.fetchOne().value1();
+            } catch (NullPointerException e) {
+                throw new NotFoundException("No time series profile data found for the given parameters");
+            }
         }
 
         // generate and run query to get the time series profile data
@@ -682,9 +699,7 @@ public class TimeSeriesProfileInstanceDao extends JooqDao<TimeSeriesProfileInsta
         builder.withPageFirstDate(timeList.stream().min(Instant::compareTo).orElse(null));
         builder.withPageLastDate(timeList.stream().max(Instant::compareTo).orElse(null));
         builder.withVersionDate(versionDate);
-        return builder
-                .build();
-
+        return builder.build();
     }
 
     private static int findParameterIndex(List<ParameterColumnInfo> parameterColumnInfoList, long latestTime,

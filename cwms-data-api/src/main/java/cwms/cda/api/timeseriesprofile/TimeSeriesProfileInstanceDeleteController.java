@@ -69,7 +69,7 @@ public final class TimeSeriesProfileInstanceDeleteController extends TimeSeriesP
                     + "the time zone of the values of the begin and end fields. If this field is not specified, "
                     + "the default time zone of UTC shall be used."),
             @OpenApiParam(name = VERSION_DATE, type = Instant.class, description = "The version date of the"
-                + " time series profile instance.", required = true),
+                + " time series profile instance. Accepts ISO8601 format.", required = true),
             @OpenApiParam(name = DATE, type = Instant.class, description = "The first date of the"
                 + " time series profile instance.", required = true),
             @OpenApiParam(name = OVERRIDE_PROTECTION, type = Boolean.class, description = "Override protection"

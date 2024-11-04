@@ -67,8 +67,8 @@ public final class TimeSeriesProfileInstanceCreateController extends TimeSeriesP
                 + " time series profile instance. Default is REPLACE_ALL"),
             @OpenApiParam(name = OVERRIDE_PROTECTION, type = Boolean.class, description = "Override protection"
                 + " for the time series profile instance. Default is false"),
-            @OpenApiParam(name = VERSION_DATE, type = Long.class, description = "The version date of the"
-                + " time series profile instance.", required = true),
+            @OpenApiParam(name = VERSION_DATE, type = Instant.class, description = "The version date of the"
+                + " time series profile instance. Accepts ISO8601 format.", required = true),
             @OpenApiParam(name = PROFILE_DATA, required = true, description = "The profile data of the"
                 + " time series profile instance"),
             @OpenApiParam(name = VERSION, description = "The version of the"

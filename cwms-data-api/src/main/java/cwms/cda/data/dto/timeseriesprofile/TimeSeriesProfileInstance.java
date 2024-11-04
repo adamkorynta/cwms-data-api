@@ -31,10 +31,15 @@ public final class TimeSeriesProfileInstance extends CwmsDTOPaginated {
     private final Map<Long, List<TimeSeriesData>> timeSeriesList;
     private final String locationTimeZone;
     private final String version;
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
     private final Instant versionDate;
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
     private final Instant firstDate;
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
     private final Instant lastDate;
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
     private final Instant pageFirstDate;
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
     private final Instant pageLastDate;
 
     private TimeSeriesProfileInstance(Builder builder) {

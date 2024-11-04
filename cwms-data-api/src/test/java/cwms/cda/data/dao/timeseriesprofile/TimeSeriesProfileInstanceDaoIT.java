@@ -62,6 +62,7 @@ class TimeSeriesProfileInstanceDaoIT extends DataApiTestIT {
             List<String> unitList = new ArrayList<>();
             unitList.add("m");
             unitList.add("kPa");
+            String timeZone = "UTC";
             Instant versionDate = Instant.parse("2024-07-09T12:00:00.00Z");
             Instant startTime = Instant.parse("2018-07-09T19:06:20.00Z");
             Instant endTime = Instant.parse("2025-07-09T19:06:20.00Z");
@@ -73,7 +74,6 @@ class TimeSeriesProfileInstanceDaoIT extends DataApiTestIT {
              } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-            String timeZone = "UTC";
             boolean startInclusive = true;
             boolean endInclusive = true;
             boolean previous = true;
@@ -142,6 +142,7 @@ class TimeSeriesProfileInstanceDaoIT extends DataApiTestIT {
             List<String> unitList = new ArrayList<>();
             unitList.add("m");
             unitList.add("kPa");
+            String timeZone = "UTC";
             Instant versionDate = Instant.parse("2024-07-09T12:00:00.00Z");
             Instant startTime = Instant.parse("2018-07-09T19:06:20.00Z");
             Instant endTime = Instant.parse("2025-07-09T19:06:20.00Z");
@@ -153,7 +154,6 @@ class TimeSeriesProfileInstanceDaoIT extends DataApiTestIT {
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-            String timeZone = "UTC";
             boolean startInclusive = true;
             boolean endInclusive = true;
             boolean previous = true;
@@ -223,6 +223,7 @@ class TimeSeriesProfileInstanceDaoIT extends DataApiTestIT {
             List<String> unitList = new ArrayList<>();
             unitList.add("m");
             unitList.add("kPa");
+            String timeZone = "UTC";
             Instant versionDate = Instant.parse("2024-07-09T12:00:00.00Z");
             Instant startTime = Instant.parse("2018-07-09T19:06:20.00Z");
             Instant endTime = Instant.parse("2025-07-09T19:06:20.00Z");
@@ -234,7 +235,6 @@ class TimeSeriesProfileInstanceDaoIT extends DataApiTestIT {
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-            String timeZone = "UTC";
             boolean startInclusive = true;
             boolean endInclusive = true;
             boolean previous = true;
@@ -381,6 +381,7 @@ class TimeSeriesProfileInstanceDaoIT extends DataApiTestIT {
             unitList.add("m");
             unitList.add("kPa");
             unitList.add("F");
+            String timeZone = "UTC";
             Instant versionDate = Instant.parse("2024-07-09T12:00:00.00Z");
             Instant startTime = Instant.parse("2018-07-09T19:06:20.00Z");
             Instant endTime = Instant.parse("2025-07-09T19:06:20.00Z");
@@ -393,7 +394,6 @@ class TimeSeriesProfileInstanceDaoIT extends DataApiTestIT {
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-            String timeZone = "UTC";
             boolean startInclusive = true;
             boolean endInclusive = true;
             boolean previous = true;
@@ -509,6 +509,7 @@ class TimeSeriesProfileInstanceDaoIT extends DataApiTestIT {
             unitList.add("m");
             unitList.add("F");
             unitList.add("kPa");
+            String timeZone = "UTC";
             Instant versionDate = Instant.parse("2024-07-09T12:00:00.00Z");
             Instant startTime = Instant.parse("2018-07-09T19:06:20.00Z");
             Instant endTime = Instant.parse("2025-07-09T19:06:20.00Z");
@@ -521,7 +522,6 @@ class TimeSeriesProfileInstanceDaoIT extends DataApiTestIT {
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-            String timeZone = "UTC";
             boolean startInclusive = true;
             boolean endInclusive = true;
             boolean previous = true;
@@ -621,6 +621,7 @@ class TimeSeriesProfileInstanceDaoIT extends DataApiTestIT {
 
     @Test
     void testCatalogTimeSeriesProfileInstances() throws SQLException {
+        String timeZone = "UTC";
         Instant versionDate = Instant.parse("2024-07-09T12:00:00.00Z");
         String officeId = "SPK";
         String location = "Glensboro";
@@ -636,7 +637,6 @@ class TimeSeriesProfileInstanceDaoIT extends DataApiTestIT {
         String locationMask = "*";
         String parameterMask = "*";
         String versionMask = "*";
-        String timeZone = "UTC";
         Instant firstDate = Instant.parse("2024-07-09T19:00:11.00Z");
         Instant[] dateTimeArray = {Instant.parse("2024-07-09T19:00:11.00Z"), Instant.parse("2024-07-09T20:00:22.00Z")};
         double[] valueArray = {1, 4};
@@ -716,7 +716,7 @@ class TimeSeriesProfileInstanceDaoIT extends DataApiTestIT {
                         result.getTimeSeriesProfile().getKeyParameter(), result.getVersion(),
                         startTime, timeZone, false, result.getVersionDate());
 
-            // check if the retrieved timeseries profile instance has the same tineseries as the one we stored
+            // check if the retrieved timeseries profile instance has the same timeseries as the one we stored
             assertEquals(2, result.getTimeSeriesList().size());
             Long time = result.getTimeSeriesList().keySet().iterator().next();
             assertEquals(2, result.getTimeSeriesList().get(time).size());
@@ -812,8 +812,8 @@ class TimeSeriesProfileInstanceDaoIT extends DataApiTestIT {
         int[] parameterIndexArray = {5, 6};
         String[] keyParameter = {parameterArray[0], parameterUnitArray[0]};
         String[] parameter1 = {parameterArray[1], parameterUnitArray[1]};
-        Instant versionDate = Instant.parse("2024-07-09T12:00:00.00Z");
         String timeZone = "UTC";
+        Instant versionDate = Instant.parse("2024-07-09T12:00:00.00Z");
         Instant startTime = Instant.parse("2018-07-09T19:06:20.00Z");
         Instant endTime = Instant.parse("2025-07-09T19:06:20.00Z");
         Instant firstDate = Instant.parse("2024-07-09T19:00:11.00Z");
@@ -927,7 +927,7 @@ class TimeSeriesProfileInstanceDaoIT extends DataApiTestIT {
     }
 
     private static TimeSeriesProfileInstance buildTestTimeSeriesProfileInstance(String officeId, String locationName, String[] keyParameterUnit, String[] parameterUnit1, String version,
-            Instant[] dateTimeArray, double[] valueArray, String timeZone, Instant versionInstant) {
+            Instant[] dateTimeArray, double[] valueArray, String timeZone, Instant versionDate) {
 
         TimeSeriesProfile timeSeriesProfile = buildTestTimeSeriesProfile(officeId, locationName, keyParameterUnit[0], parameterUnit1[0]);
 
@@ -991,7 +991,7 @@ class TimeSeriesProfileInstanceDaoIT extends DataApiTestIT {
                 .withTotal(3)
                 .withTimeSeriesList(timeSeriesList)
                 .withVersion(version)
-                .withVersionDate(versionInstant)
+                .withVersionDate(versionDate)
                 .build();
     }
 

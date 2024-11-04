@@ -291,6 +291,102 @@ final class TimeSeriesProfileInstanceControllerIT extends DataApiTestIT {
     }
 
     @Test
+    void test_create_retrieve_TimeSeriesProfileInstance_Columnar_withTZ() throws Exception {
+
+        storeParser(null, tspParserColumnar);
+
+        assertParserInDb(tspParserColumnar);
+
+        // Create instance
+        given()
+            .log().ifValidationFails(LogDetail.ALL, true)
+            .accept(Formats.JSONV1)
+            .contentType(Formats.JSONV1)
+            .body(tspData)
+            .header(AUTH_HEADER, user.toHeaderValue())
+            .queryParam(METHOD, StoreRule.REPLACE_ALL)
+            .queryParam(OVERRIDE_PROTECTION, false)
+            .queryParam(VERSION_DATE, "2024-07-09T12:00:00-07:00")
+            .queryParam(PROFILE_DATA, tsProfileDataColumnar)
+            .queryParam(VERSION, "OBS")
+        .when()
+            .redirects().follow(true)
+            .redirects().max(3)
+            .post("/timeseries/profile-instance/")
+        .then()
+            .log().ifValidationFails(LogDetail.ALL, true)
+        .assertThat()
+            .statusCode(is(HttpServletResponse.SC_CREATED))
+        ;
+
+        // Retrieve instance
+        given()
+            .log().ifValidationFails(LogDetail.ALL, true)
+            .accept(Formats.JSONV1)
+            .contentType(Formats.JSONV1)
+            .header(AUTH_HEADER, user.toHeaderValue())
+            .queryParam(OFFICE, OFFICE_ID)
+            .queryParam(VERSION_DATE, "2024-07-09T12:00:00-07:00")
+            .queryParam(TIMEZONE, "UTC")
+            .queryParam(START, "2018-07-09T19:06:20.00Z")
+            .queryParam(END, "2025-07-09T19:06:20.00Z")
+            .queryParam(START_TIME_INCLUSIVE, true)
+            .queryParam(END_TIME_INCLUSIVE, true)
+            .queryParam(UNIT, units)
+        .when()
+            .redirects().follow(true)
+            .redirects().max(3)
+            .get("/timeseries/profile-instance/" + tspInstance.getTimeSeriesProfile().getLocationId().getName()
+                    + "/" + tspInstance.getTimeSeriesProfile().getKeyParameter() + "/" + "OBS")
+        .then()
+            .log().ifValidationFails(LogDetail.ALL, true)
+        .assertThat()
+            .statusCode(is(HttpServletResponse.SC_OK))
+            .body("version", equalTo("OBS"))
+            .body("version-date", equalTo("2024-07-09T19:00:00Z"))
+            .body("time-series-profile.location-id.name",
+                    equalTo(tspInstance.getTimeSeriesProfile().getLocationId().getName()))
+            .body("time-series-profile.key-parameter",
+                    equalTo(tspInstance.getTimeSeriesProfile().getKeyParameter()))
+            .body("time-series-profile.parameter-list.size()", equalTo(2))
+            .body("time-series-list.size()", equalTo(3))
+        ;
+
+        // Retrieve instance
+        given()
+            .log().ifValidationFails(LogDetail.ALL, true)
+            .accept(Formats.JSONV1)
+            .contentType(Formats.JSONV1)
+            .header(AUTH_HEADER, user.toHeaderValue())
+            .queryParam(OFFICE, OFFICE_ID)
+            .queryParam(VERSION_DATE, "2024-07-09T19:00:00Z")
+            .queryParam(TIMEZONE, "UTC")
+            .queryParam(START, "2018-07-09T19:06:20.00Z")
+            .queryParam(END, "2025-07-09T19:06:20.00Z")
+            .queryParam(START_TIME_INCLUSIVE, true)
+            .queryParam(END_TIME_INCLUSIVE, true)
+            .queryParam(UNIT, units)
+        .when()
+            .redirects().follow(true)
+            .redirects().max(3)
+            .get("/timeseries/profile-instance/" + tspInstance.getTimeSeriesProfile().getLocationId().getName()
+                    + "/" + tspInstance.getTimeSeriesProfile().getKeyParameter() + "/" + "OBS")
+        .then()
+            .log().ifValidationFails(LogDetail.ALL, true)
+        .assertThat()
+            .statusCode(is(HttpServletResponse.SC_OK))
+            .body("version", equalTo("OBS"))
+            .body("version-date", equalTo("2024-07-09T19:00:00Z"))
+            .body("time-series-profile.location-id.name",
+                    equalTo(tspInstance.getTimeSeriesProfile().getLocationId().getName()))
+            .body("time-series-profile.key-parameter",
+                    equalTo(tspInstance.getTimeSeriesProfile().getKeyParameter()))
+            .body("time-series-profile.parameter-list.size()", equalTo(2))
+            .body("time-series-list.size()", equalTo(3))
+        ;
+    }
+
+    @Test
     void store_retrieve_instance_with_ref_TS() throws Exception {
         storeParser(tspParserIndexed2, null);
 

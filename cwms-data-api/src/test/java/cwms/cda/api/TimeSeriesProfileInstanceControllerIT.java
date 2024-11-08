@@ -288,6 +288,28 @@ final class TimeSeriesProfileInstanceControllerIT extends DataApiTestIT {
             .body("time-series-profile.parameter-list.size()", equalTo(2))
             .body("time-series-list.size()", equalTo(3))
         ;
+
+        // Delete instance
+        given()
+            .log().ifValidationFails(LogDetail.ALL, true)
+            .accept(Formats.JSONV1)
+            .contentType(Formats.JSONV1)
+            .header(AUTH_HEADER, user.toHeaderValue())
+            .queryParam(OFFICE, OFFICE_ID)
+            .queryParam(VERSION_DATE, "2024-07-09T12:00:00Z")
+            .queryParam(TIMEZONE, "UTC")
+            .queryParam(OVERRIDE_PROTECTION, false)
+            .queryParam(DATE, "2019-09-09T12:49:07Z")
+        .when()
+            .redirects().follow(true)
+            .redirects().max(3)
+            .delete("/timeseries/profile-instance/" + tspInstance.getTimeSeriesProfile().getLocationId().getName()
+                + "/" + tspInstance.getTimeSeriesProfile().getKeyParameter() + "/" + "OBS")
+        .then()
+            .log().ifValidationFails(LogDetail.ALL, true)
+        .assertThat()
+            .statusCode(is(HttpServletResponse.SC_NO_CONTENT))
+        ;
     }
 
     @Test
@@ -306,7 +328,7 @@ final class TimeSeriesProfileInstanceControllerIT extends DataApiTestIT {
             .header(AUTH_HEADER, user.toHeaderValue())
             .queryParam(METHOD, StoreRule.REPLACE_ALL)
             .queryParam(OVERRIDE_PROTECTION, false)
-            .queryParam(VERSION_DATE, "2024-07-09T12:00:00-07:00")
+            .queryParam(VERSION_DATE, "2024-07-09T12:00:00.00-07:00")
             .queryParam(PROFILE_DATA, tsProfileDataColumnar)
             .queryParam(VERSION, "OBS")
         .when()
@@ -326,7 +348,7 @@ final class TimeSeriesProfileInstanceControllerIT extends DataApiTestIT {
             .contentType(Formats.JSONV1)
             .header(AUTH_HEADER, user.toHeaderValue())
             .queryParam(OFFICE, OFFICE_ID)
-            .queryParam(VERSION_DATE, "2024-07-09T12:00:00-07:00")
+            .queryParam(VERSION_DATE, "2024-07-09T12:00:00.00-07:00")
             .queryParam(TIMEZONE, "UTC")
             .queryParam(START, "2018-07-09T19:06:20.00Z")
             .queryParam(END, "2025-07-09T19:06:20.00Z")
@@ -916,6 +938,52 @@ final class TimeSeriesProfileInstanceControllerIT extends DataApiTestIT {
             .body("time-series-list[\"1599659347000\"].size()", equalTo(2))
             .body("time-series-list[\"1599659359000\"].size()", equalTo(2))
         ;
+
+        // Delete instance
+        given()
+            .log().ifValidationFails(LogDetail.ALL, true)
+            .accept(Formats.JSONV1)
+            .contentType(Formats.JSONV1)
+            .header(AUTH_HEADER, user.toHeaderValue())
+            .queryParam(OFFICE, OFFICE_ID)
+            .queryParam(VERSION_DATE, "2024-07-09T12:00:00.00Z")
+            .queryParam(TIMEZONE, "UTC")
+            .queryParam(OVERRIDE_PROTECTION, false)
+            .queryParam(DATE, "2019-09-09T12:49:07Z")
+        .when()
+            .redirects().follow(true)
+            .redirects().max(3)
+            .delete("/timeseries/profile-instance/" + tspInstance.getTimeSeriesProfile().getLocationId().getName()
+                    + "/" + tspParserColumnar.getKeyParameter() + "/" + "OBS")
+        .then()
+            .log().ifValidationFails(LogDetail.ALL, true)
+        .assertThat()
+            .statusCode(is(HttpServletResponse.SC_NO_CONTENT))
+        ;
+
+        // Delete instance
+        given()
+            .log().ifValidationFails(LogDetail.ALL, true)
+            .accept(Formats.JSONV1)
+            .contentType(Formats.JSONV1)
+            .header(AUTH_HEADER, user.toHeaderValue())
+            .queryParam(OFFICE, OFFICE_ID)
+            .queryParam(VERSION_DATE, "2023-07-09T12:00:00.00Z")
+            .queryParam(TIMEZONE, "UTC")
+            .queryParam(OVERRIDE_PROTECTION, false)
+            .queryParam(DATE, "2020-09-09T13:49:07Z")
+        .when()
+            .redirects().follow(true)
+            .redirects().max(3)
+            .delete("/timeseries/profile-instance/" + tspInstance.getTimeSeriesProfile().getLocationId().getName()
+                    + "/" + tspParserColumnar.getKeyParameter() + "/" + "OBS")
+        .then()
+            .log().ifValidationFails(LogDetail.ALL, true)
+        .assertThat()
+            .statusCode(is(HttpServletResponse.SC_NO_CONTENT))
+        ;
+
+
     }
 
     // This test needs the functionality to be confirmed - unsure if this is how it should work
@@ -1431,11 +1499,6 @@ final class TimeSeriesProfileInstanceControllerIT extends DataApiTestIT {
                 dao.storeTimeSeriesProfileParser(parserI, false);
             } else {
                 dao.storeTimeSeriesProfileParser(parserC, false);
-            }
-            try {
-                c.commit();
-            } catch (SQLException e) {
-                LOGGER.log(Level.CONFIG, "Failed to commit transaction", e);
             }
         });
     }

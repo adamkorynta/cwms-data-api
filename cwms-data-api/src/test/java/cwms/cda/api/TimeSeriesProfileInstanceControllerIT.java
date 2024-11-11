@@ -56,6 +56,7 @@ import cwms.cda.data.dao.timeseriesprofile.TimeSeriesProfileDao;
 import cwms.cda.data.dao.timeseriesprofile.TimeSeriesProfileInstanceDao;
 import cwms.cda.data.dao.timeseriesprofile.TimeSeriesProfileParserDao;
 import cwms.cda.data.dto.CwmsId;
+import cwms.cda.data.dto.timeseriesprofile.ParameterColumnInfo;
 import cwms.cda.data.dto.timeseriesprofile.TimeSeriesProfile;
 import cwms.cda.data.dto.timeseriesprofile.TimeSeriesProfileInstance;
 import cwms.cda.data.dto.timeseriesprofile.TimeSeriesProfileParser;
@@ -72,6 +73,7 @@ import java.sql.SQLException;
 import java.time.Instant;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletResponse;
 
 import io.restassured.response.ExtractableResponse;
@@ -939,6 +941,10 @@ final class TimeSeriesProfileInstanceControllerIT extends DataApiTestIT {
             .body("time-series-list[\"1599659359000\"].size()", equalTo(2))
         ;
 
+        assertInstanceInDb(tspInstance, Instant.parse("2024-07-09T12:00:00.00Z"), "OBS",
+                Instant.parse("2019-09-09T12:49:07Z"), Instant.parse("2019-09-09T13:17:20Z"), "UTC");
+
+
         // Delete instance
         given()
             .log().ifValidationFails(LogDetail.ALL, true)
@@ -961,6 +967,9 @@ final class TimeSeriesProfileInstanceControllerIT extends DataApiTestIT {
             .statusCode(is(HttpServletResponse.SC_NO_CONTENT))
         ;
 
+        assertInstanceInDb(tspInstance, Instant.parse("2023-07-09T12:00:00.00Z"), "OBS",
+                Instant.parse("2020-09-09T13:49:07Z"), Instant.parse("2020-09-09T14:17:20Z"), "UTC");
+
         // Delete instance
         given()
             .log().ifValidationFails(LogDetail.ALL, true)
@@ -982,8 +991,6 @@ final class TimeSeriesProfileInstanceControllerIT extends DataApiTestIT {
         .assertThat()
             .statusCode(is(HttpServletResponse.SC_NO_CONTENT))
         ;
-
-
     }
 
     // This test needs the functionality to be confirmed - unsure if this is how it should work
@@ -1511,6 +1518,21 @@ final class TimeSeriesProfileInstanceControllerIT extends DataApiTestIT {
             TimeSeriesProfileParser dbParser = dao.retrieveTimeSeriesProfileParser(parser.getLocationId().getName(),
                     parser.getKeyParameter(), OFFICE_ID);
             assertNotNull(dbParser);
+        }, CwmsDataApiSetupCallback.getWebUser());
+    }
+
+    private void assertInstanceInDb(TimeSeriesProfileInstance instance, Instant versionDate, String version,
+            Instant firstDate, Instant lastDate, String timeZone) throws Exception {
+        CwmsDatabaseContainer<?> db = CwmsDataApiSetupCallback.getDatabaseLink();
+        db.connection(c -> {
+            DSLContext dsl = dslContext(c, OFFICE_ID);
+            TimeSeriesProfileInstanceDao dao = new TimeSeriesProfileInstanceDao(dsl);
+            TimeSeriesProfileInstance dbInstance = dao.retrieveTimeSeriesProfileInstance(instance.getTimeSeriesProfile().getLocationId(),
+                    instance.getTimeSeriesProfile().getKeyParameter(), version,
+                    instance.getParameterColumns().stream().map(ParameterColumnInfo::getUnit).collect(Collectors.toList()),
+                    firstDate, lastDate, timeZone, true,
+                    true, false, false, versionDate, false, null, instance.getPageSize());
+            assertNotNull(dbInstance);
         }, CwmsDataApiSetupCallback.getWebUser());
     }
 }

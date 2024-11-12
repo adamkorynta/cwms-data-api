@@ -803,6 +803,11 @@ final class TimeSeriesProfileInstanceControllerIT extends DataApiTestIT {
             .statusCode(is(HttpServletResponse.SC_CREATED))
         ;
 
+        assertInstanceInDb(tspInstance, Instant.parse("2024-07-09T12:00:00.00Z"), "OBS",
+                Instant.parse("2019-09-09T12:49:07Z"), Instant.parse("2019-09-09T13:17:20Z"), "UTC");
+        assertInstanceInDb(tspInstance, Instant.parse("2023-07-09T12:00:00.00Z"), "OBS",
+                Instant.parse("2020-09-09T13:49:07Z"), Instant.parse("2020-09-09T14:17:20Z"), "UTC");
+
         // Retrieve instance with max version set and provided version date (throws error)
         given()
             .log().ifValidationFails(LogDetail.ALL, true)
@@ -940,10 +945,27 @@ final class TimeSeriesProfileInstanceControllerIT extends DataApiTestIT {
             .body("time-series-list[\"1599659347000\"].size()", equalTo(2))
             .body("time-series-list[\"1599659359000\"].size()", equalTo(2))
         ;
-
-        assertInstanceInDb(tspInstance, Instant.parse("2024-07-09T12:00:00.00Z"), "OBS",
-                Instant.parse("2019-09-09T12:49:07Z"), Instant.parse("2019-09-09T13:17:20Z"), "UTC");
-
+        // Delete instance
+        given()
+                .log().ifValidationFails(LogDetail.ALL, true)
+                .accept(Formats.JSONV1)
+                .contentType(Formats.JSONV1)
+                .header(AUTH_HEADER, user.toHeaderValue())
+                .queryParam(OFFICE, OFFICE_ID)
+                .queryParam(VERSION_DATE, "2023-07-09T12:00:00.00Z")
+                .queryParam(TIMEZONE, "UTC")
+                .queryParam(OVERRIDE_PROTECTION, false)
+                .queryParam(DATE, "2020-09-09T13:49:07Z")
+                .when()
+                .redirects().follow(true)
+                .redirects().max(3)
+                .delete("/timeseries/profile-instance/" + tspInstance.getTimeSeriesProfile().getLocationId().getName()
+                        + "/" + tspParserColumnar.getKeyParameter() + "/" + "OBS")
+                .then()
+                .log().ifValidationFails(LogDetail.ALL, true)
+                .assertThat()
+                .statusCode(is(HttpServletResponse.SC_NO_CONTENT))
+        ;
 
         // Delete instance
         given()
@@ -956,31 +978,6 @@ final class TimeSeriesProfileInstanceControllerIT extends DataApiTestIT {
             .queryParam(TIMEZONE, "UTC")
             .queryParam(OVERRIDE_PROTECTION, false)
             .queryParam(DATE, "2019-09-09T12:49:07Z")
-        .when()
-            .redirects().follow(true)
-            .redirects().max(3)
-            .delete("/timeseries/profile-instance/" + tspInstance.getTimeSeriesProfile().getLocationId().getName()
-                    + "/" + tspParserColumnar.getKeyParameter() + "/" + "OBS")
-        .then()
-            .log().ifValidationFails(LogDetail.ALL, true)
-        .assertThat()
-            .statusCode(is(HttpServletResponse.SC_NO_CONTENT))
-        ;
-
-        assertInstanceInDb(tspInstance, Instant.parse("2023-07-09T12:00:00.00Z"), "OBS",
-                Instant.parse("2020-09-09T13:49:07Z"), Instant.parse("2020-09-09T14:17:20Z"), "UTC");
-
-        // Delete instance
-        given()
-            .log().ifValidationFails(LogDetail.ALL, true)
-            .accept(Formats.JSONV1)
-            .contentType(Formats.JSONV1)
-            .header(AUTH_HEADER, user.toHeaderValue())
-            .queryParam(OFFICE, OFFICE_ID)
-            .queryParam(VERSION_DATE, "2023-07-09T12:00:00.00Z")
-            .queryParam(TIMEZONE, "UTC")
-            .queryParam(OVERRIDE_PROTECTION, false)
-            .queryParam(DATE, "2020-09-09T13:49:07Z")
         .when()
             .redirects().follow(true)
             .redirects().max(3)
